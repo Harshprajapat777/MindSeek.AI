@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - MindSeek AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 48px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .logo-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: #ffffff;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        /* Search Bar in Header */
+        .header-search {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 40px;
+        }
+
+        .header-search-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            background: #f8f9fb;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+
+        .header-search-box:focus-within {
+            background: #ffffff;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .header-search-box svg {
+            width: 20px;
+            height: 20px;
+            stroke: #9ca3af;
+        }
+
+        .header-search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            color: #1a1a2e;
+            background: transparent;
+        }
+
+        .header-search-btn {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border: none;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .header-search-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: #f8f9fb;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: #ffffff;
+            border-color: #6366f1;
+            color: #4f46e5;
+        }
+
+        .back-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        /* Search Process Card */
+        .search-process-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 28px 32px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .process-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .process-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .process-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: #f0fdf4;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #16a34a;
+        }
+
+        .process-status.loading {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .process-status svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .process-steps {
+            display: flex;
+            gap: 16px;
+        }
+
+        .process-step {
+            flex: 1;
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: #f8f9fb;
+            border-radius: 14px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .process-step.active {
+            background: #f5f3ff;
+            border-color: #c4b5fd;
+        }
+
+        .process-step.completed {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: #6b7280;
+            flex-shrink: 0;
+        }
+
+        .process-step.active .step-number {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #ffffff;
+        }
+
+        .process-step.completed .step-number {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #ffffff;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 4px;
+        }
+
+        .step-desc {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .step-detail {
+            margin-top: 10px;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            font-size: 12px;
+            color: #4b5563;
+        }
+
+        .step-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .step-skill-tag {
+            padding: 4px 10px;
+            background: #ede9fe;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #5b21b6;
+            font-weight: 500;
+        }
+
+        /* Results Section */
+        .results-section {
+            margin-top: 28px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .results-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .results-count {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .results-filters {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #64748b;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            border-color: #6366f1;
+            color: #4f46e5;
+            background: #f5f3ff;
+        }
+
+        /* Expert Cards Grid */
+        .experts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 20px;
+        }
+
+        /* Loading State */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 56px;
+            height: 56px;
+            border: 4px solid #e5e7eb;
+            border-top-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #4b5563;
+            font-weight: 500;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .empty-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            background: #f3f4f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-icon svg {
+            width: 32px;
+            height: 32px;
+            stroke: #9ca3af;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+
+        .empty-desc {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .process-steps {
+                flex-direction: column;
+            }
+
+            .experts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-search {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 12px 16px;
+            }
+
+            .main-content {
+                padding: 20px 16px;
+            }
+
+            .search-process-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <a href="/" class="logo-section">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor"/>
+                    <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <span class="logo-text">MindSeek AI</span>
+        </a>
+
+        <div class="header-search">
+            <div class="header-search-box">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="11" cy="11" r="8" stroke-width="2"/>
+                    <path d="M21 21l-4.35-4.35" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <input type="text" class="header-search-input" placeholder="Search for experts..." id="headerSearchInput">
+                <button class="header-search-btn" id="headerSearchBtn">Search</button>
+            </div>
+        </div>
+
+        <a href="/" class="back-btn">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 12H5M12 19l-7-7 7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Back to Home
+        </a>
+    </header>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">AI is finding the best experts for you...</div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Search Process Card -->
+        <div class="search-process-card" id="processCard">
+            <div class="process-header">
+                <h2 class="process-title">Search Process</h2>
+                <div class="process-status" id="processStatus">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <polyline points="22 4 12 14.01 9 11.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span id="statusText">Completed</span>
+                </div>
+            </div>
+
+            <div class="process-steps">
+                <!-- Step 1: Query Understanding -->
+                <div class="process-step completed" id="step1">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">Understanding Your Query</div>
+                        <div class="step-desc">AI analyzed what you're looking for</div>
+                        <div class="step-detail" id="step1Detail">
+                            <strong>Searching for:</strong>
+                            <span id="queryText"></span>
+                            <div class="step-skills" id="querySkills"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Finding Candidates -->
+                <div class="process-step completed" id="step2">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">Finding Candidates</div>
+                        <div class="step-desc">Searched through expert database</div>
+                        <div class="step-detail" id="step2Detail">
+                            <strong>Scanned:</strong> <span id="candidatesCount">10,000+</span> profiles
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Ranking Results -->
+                <div class="process-step completed" id="step3">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">Ranking Experts</div>
+                        <div class="step-desc">AI evaluated and ranked matches</div>
+                        <div class="step-detail" id="step3Detail">
+                            <strong>Found:</strong> <span id="matchCount">0</span> matching experts
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection">
+            <div class="results-header">
+                <div>
+                    <h2 class="results-title">Expert Matches</h2>
+                    <span class="results-count" id="resultsCount"></span>
+                </div>
+                <div class="results-filters">
+                    <button class="filter-btn active">All</button>
+                    <button class="filter-btn">Top Rated</button>
+                    <button class="filter-btn">Recent</button>
+                </div>
+            </div>
+
+            <div class="experts-grid" id="expertsGrid">
+                <!-- Expert cards will be inserted here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Include Expert Card Component -->
+    <script src="/static/js/expert_card.js"></script>
+
+    <script>
+        // DOM Elements
+        const headerSearchInput = document.getElementById('headerSearchInput');
+        const headerSearchBtn = document.getElementById('headerSearchBtn');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const processCard = document.getElementById('processCard');
+        const processStatus = document.getElementById('processStatus');
+        const statusText = document.getElementById('statusText');
+        const queryText = document.getElementById('queryText');
+        const querySkills = document.getElementById('querySkills');
+        const candidatesCount = document.getElementById('candidatesCount');
+        const matchCount = document.getElementById('matchCount');
+        const resultsCount = document.getElementById('resultsCount');
+        const expertsGrid = document.getElementById('expertsGrid');
+
+        // Get query from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchQuery = urlParams.get('q') || '';
+
+        // Set search input value
+        headerSearchInput.value = searchQuery;
+
+        // Initialize page
+        if (searchQuery) {
+            performSearch(searchQuery);
+        }
+
+        // Search from header
+        headerSearchBtn.addEventListener('click', () => {
+            const query = headerSearchInput.value.trim();
+            if (query) {
+                window.location.href = `/search/?q=${encodeURIComponent(query)}`;
+            }
+        });
+
+        headerSearchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                headerSearchBtn.click();
+            }
+        });
+
+        // Update process steps
+        function updateSteps(step, status) {
+            const steps = ['step1', 'step2', 'step3'];
+            steps.forEach((s, i) => {
+                const el = document.getElementById(s);
+                el.classList.remove('active', 'completed');
+                if (i < step) {
+                    el.classList.add('completed');
+                } else if (i === step) {
+                    el.classList.add(status === 'loading' ? 'active' : 'completed');
+                }
+            });
+        }
+
+        // Show loading
+        function showLoading() {
+            loadingOverlay.classList.add('active');
+            processStatus.classList.add('loading');
+            statusText.textContent = 'Processing...';
+        }
+
+        // Hide loading
+        function hideLoading() {
+            loadingOverlay.classList.remove('active');
+            processStatus.classList.remove('loading');
+            statusText.textContent = 'Completed';
+        }
+
+        // Perform search
+        async function performSearch(query) {
+            showLoading();
+            queryText.textContent = query;
+
+            // Step 1: Understanding
+            updateSteps(0, 'loading');
+
+            try {
+                const response = await fetch('/api/search/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query, top_k: 20 })
+                });
+
+                const data = await response.json();
+
+                // Step 2: Found candidates
+                updateSteps(1, 'loading');
+
+                if (data.success) {
+                    // Update query analysis
+                    if (data.query_analysis) {
+                        const skills = data.query_analysis.required_skills || [];
+                        querySkills.innerHTML = skills.map(s =>
+                            `<span class="step-skill-tag">${s}</span>`
+                        ).join('');
+                    }
+
+                    // Step 3: Ranking complete
+                    updateSteps(2, 'completed');
+                    matchCount.textContent = data.total_results;
+                    resultsCount.textContent = `${data.total_results} expert${data.total_results !== 1 ? 's' : ''} found`;
+
+                    // Render results
+                    renderExperts(data.results);
+                } else {
+                    showError(data.error);
+                }
+
+            } catch (error) {
+                console.error('Search error:', error);
+                showError('Failed to connect to search service');
+            }
+
+            hideLoading();
+        }
+
+        // Render expert cards
+        function renderExperts(experts) {
+            if (!experts || experts.length === 0) {
+                expertsGrid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-icon">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="11" cy="11" r="8" stroke-width="2"/>
+                                <path d="M21 21l-4.35-4.35" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div class="empty-title">No experts found</div>
+                        <div class="empty-desc">Try adjusting your search terms or filters</div>
+                    </div>
+                `;
+                return;
+            }
+
+            expertsGrid.innerHTML = experts.map(expert => createExpertCard(expert)).join('');
+        }
+
+        // Show error
+        function showError(message) {
+            expertsGrid.innerHTML = `
+                <div class="empty-state" style="grid-column: 1 / -1; background: #fef2f2; border-color: #fecaca;">
+                    <div class="empty-icon" style="background: #fee2e2;">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="stroke: #dc2626;">
+                            <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            <line x1="12" y1="8" x2="12" y2="12" stroke-width="2" stroke-linecap="round"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="empty-title" style="color: #dc2626;">Search Failed</div>
+                    <div class="empty-desc" style="color: #7f1d1d;">${message}</div>
+                </div>
+            `;
+        }
+
+        // Create Expert Card (inline for now, can be moved to separate file)
+        function createExpertCard(expert) {
+            const skills = parseSkills(expert.skills);
+            const matchReasons = expert.match_reasons || [];
+            const score = expert.scores?.final || expert.score || 0;
+
+            return `
+                <div class="expert-card-component">
+                    <div class="card-header">
+                        <div class="card-avatar">${getInitials(expert.name)}</div>
+                        <div class="card-info">
+                            <div class="card-name">${expert.name || 'Unknown'}</div>
+                            <div class="card-title">${expert.title || 'Expert'}</div>
+                            <div class="card-location">
+                                <svg viewBox="0 0 24 24" fill="none">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke-width="2"/>
+                                    <circle cx="12" cy="10" r="3" stroke-width="2"/>
+                                </svg>
+                                ${expert.location || 'Not specified'}
+                            </div>
+                        </div>
+                        <div class="card-score">
+                            <div class="score-value" style="background: ${getScoreGradient(score)}">${Math.round(score)}%</div>
+                            <div class="score-label">Match</div>
+                        </div>
+                    </div>
+
+                    ${expert.biography ? `<div class="card-bio">${expert.biography}</div>` : ''}
+
+                    ${skills.length > 0 ? `
+                        <div class="card-skills">
+                            ${skills.map(s => `<span class="skill-chip">${s}</span>`).join('')}
+                        </div>
+                    ` : ''}
+
+                    ${matchReasons.length > 0 ? `
+                        <div class="card-match">
+                            <div class="match-label">Why this match</div>
+                            <div class="match-text">${matchReasons.slice(0, 2).join(' • ')}</div>
+                        </div>
+                    ` : ''}
+
+                    <div class="card-footer">
+                        ${expert.companies ? `<span class="card-companies">${expert.companies.substring(0, 40)}${expert.companies.length > 40 ? '...' : ''}</span>` : '<span></span>'}
+                        <button class="card-btn" onclick="viewExpert('${expert.uid}')">View Profile</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getInitials(name) {
+            if (!name) return '??';
+            const parts = name.trim().split(' ');
+            return parts.length >= 2
+                ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+                : name.substring(0, 2).toUpperCase();
+        }
+
+        function getScoreGradient(score) {
+            if (score >= 80) return 'linear-gradient(135deg, #10b981, #059669)';
+            if (score >= 60) return 'linear-gradient(135deg, #3b82f6, #2563eb)';
+            if (score >= 40) return 'linear-gradient(135deg, #f59e0b, #d97706)';
+            return 'linear-gradient(135deg, #6b7280, #4b5563)';
+        }
+
+        function parseSkills(skillsStr) {
+            if (!skillsStr) return [];
+            return skillsStr.split(/[,;|]/).map(s => s.trim()).filter(s => s).slice(0, 5);
+        }
+
+        function viewExpert(uid) {
+            alert('Expert profile page coming soon! UID: ' + uid);
+        }
+    </script>
+
+    <!-- Expert Card Styles -->
+    <style>
+        .expert-card-component {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s;
+        }
+
+        .expert-card-component:hover {
+            border-color: #6366f1;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .card-avatar {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .card-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .card-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 2px;
+        }
+
+        .card-title {
+            font-size: 13px;
+            color: #6366f1;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .card-location {
+            font-size: 12px;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-location svg {
+            width: 12px;
+            height: 12px;
+            stroke: #9ca3af;
+        }
+
+        .card-score {
+            text-align: center;
+        }
+
+        .score-value {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .score-label {
+            font-size: 10px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+
+        .card-bio {
+            font-size: 13px;
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 14px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .skill-chip {
+            padding: 5px 10px;
+            background: #f3f4f6;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #4b5563;
+            font-weight: 500;
+        }
+
+        .card-match {
+            padding: 12px 14px;
+            background: #f0fdf4;
+            border-radius: 10px;
+            border: 1px solid #bbf7d0;
+            margin-bottom: 14px;
+        }
+
+        .match-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #166534;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
+        }
+
+        .match-text {
+            font-size: 12px;
+            color: #15803d;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 14px;
+            border-top: 1px solid #f0f0f5;
+        }
+
+        .card-companies {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .card-btn {
+            padding: 8px 16px;
+            background: #f8f9fb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #4f46e5;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .card-btn:hover {
+            background: #4f46e5;
+            color: #ffffff;
+            border-color: #4f46e5;
+        }
+    </style>
+</body>
+</html>
