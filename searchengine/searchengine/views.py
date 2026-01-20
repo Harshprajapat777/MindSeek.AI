@@ -20,16 +20,17 @@ def home(request):
 @require_http_methods(["POST", "GET"])
 def search_api(request):
     """
-    Main search API endpoint with full reranking.
+    LLM-Powered Expert Search API.
 
-    GET: /api/search?q=<query>&top_k=<number>&filters=<json>
-    POST: /api/search with JSON body {"query": "...", "top_k": 20, "filters": {...}}
+    GET: /api/search?q=<query>&top_k=<number>
+    POST: /api/search with JSON body {"query": "...", "top_k": 20}
 
-    Returns:
-        JSON response with search results
+    Returns JSON with:
+    - query_analysis: LLM's understanding of the query
+    - results: Ranked experts with match reasons
     """
     try:
-        # Parse request parameters
+        # Parse request
         if request.method == 'POST':
             try:
                 data = json.loads(request.body)
@@ -37,14 +38,11 @@ def search_api(request):
                 data = {}
             query = data.get('query', '')
             top_k = data.get('top_k', 20)
-            filters = data.get('filters', None)
-        else:  # GET
+        else:
             query = request.GET.get('q', '') or request.GET.get('query', '')
             top_k = int(request.GET.get('top_k', 20))
-            filters_str = request.GET.get('filters', '')
-            filters = json.loads(filters_str) if filters_str else None
 
-        # Validate query
+        # Validate
         if not query or not query.strip():
             return JsonResponse({
                 'success': False,
@@ -52,22 +50,20 @@ def search_api(request):
                 'results': []
             }, status=400)
 
-        # Limit top_k to reasonable range
         top_k = max(1, min(100, top_k))
 
-        # Perform search
-        service = get_search_service()
-        results = service.search(query, top_k=top_k, filters=filters)
+        # Perform LLM-powered search
+        results = search_experts(query, top_k=top_k)
 
-        # Convert to dict for JSON response
-        results_data = [r.to_dict() for r in results]
+        return JsonResponse(results)
 
+    except ValueError as e:
+        # OpenAI key not configured
         return JsonResponse({
-            'success': True,
-            'query': query,
-            'total_results': len(results_data),
-            'results': results_data
-        })
+            'success': False,
+            'error': str(e),
+            'results': []
+        }, status=503)
 
     except FileNotFoundError as e:
         return JsonResponse({
@@ -89,21 +85,17 @@ def search_api(request):
 @require_http_methods(["POST", "GET"])
 def search_fast_api(request):
     """
-    Fast search API endpoint (FAISS only, no reranking).
+    Fast Search API (FAISS only, no LLM).
 
-    Useful for:
-    - Autocomplete suggestions
+    Use for:
+    - Autocomplete
     - Quick previews
-    - High-volume requests
+    - When LLM cost is a concern
 
     GET: /api/search/fast?q=<query>&top_k=<number>
     POST: /api/search/fast with JSON body {"query": "...", "top_k": 20}
-
-    Returns:
-        JSON response with search results (semantic scores only)
     """
     try:
-        # Parse request parameters
         if request.method == 'POST':
             try:
                 data = json.loads(request.body)
@@ -111,11 +103,10 @@ def search_fast_api(request):
                 data = {}
             query = data.get('query', '')
             top_k = data.get('top_k', 20)
-        else:  # GET
+        else:
             query = request.GET.get('q', '') or request.GET.get('query', '')
             top_k = int(request.GET.get('top_k', 20))
 
-        # Validate query
         if not query or not query.strip():
             return JsonResponse({
                 'success': False,
@@ -123,18 +114,11 @@ def search_fast_api(request):
                 'results': []
             }, status=400)
 
-        # Limit top_k
         top_k = max(1, min(100, top_k))
 
-        # Perform fast search
         results = search_experts_fast(query, top_k=top_k)
 
-        return JsonResponse({
-            'success': True,
-            'query': query,
-            'total_results': len(results),
-            'results': results
-        })
+        return JsonResponse(results)
 
     except FileNotFoundError as e:
         return JsonResponse({
@@ -155,26 +139,30 @@ def search_fast_api(request):
 @require_http_methods(["GET"])
 def search_health(request):
     """
-    Health check endpoint for search service.
+    Health check for search service.
 
     GET: /api/search/health
-
-    Returns:
-        JSON response with service status
     """
+    import os
+
     try:
         service = get_search_service()
-        service._ensure_initialized()
 
-        from .utils.expert_search import MODEL_LOADER
-        index = MODEL_LOADER.get_faiss_index()
-        metadata = MODEL_LOADER.get_metadata()
+        from .utils.expert_search import MODELS, CONFIG
+
+        # Check FAISS index
+        index = MODELS.get_faiss_index()
+        metadata = MODELS.get_metadata()
+
+        # Check OpenAI key
+        openai_configured = bool(os.getenv('OPENAI_API_KEY'))
 
         return JsonResponse({
             'status': 'healthy',
             'index_size': index.ntotal,
             'metadata_count': len(metadata),
-            'models_loaded': True
+            'openai_configured': openai_configured,
+            'model': CONFIG.openai_model
         })
 
     except Exception as e:
