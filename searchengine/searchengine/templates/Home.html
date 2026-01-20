@@ -472,6 +472,343 @@
             stroke: currentColor;
         }
 
+        /* Results Section */
+        .results-section {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 40px;
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 4px;
+        }
+
+        .results-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .results-count {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .results-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .expert-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s;
+        }
+
+        .expert-card:hover {
+            border-color: #6366f1;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .expert-header {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .expert-avatar {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .expert-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .expert-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 4px;
+        }
+
+        .expert-title {
+            font-size: 14px;
+            color: #6366f1;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .expert-location {
+            font-size: 13px;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .expert-location svg {
+            width: 14px;
+            height: 14px;
+            stroke: #9ca3af;
+        }
+
+        .expert-score {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .score-badge {
+            padding: 6px 12px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .score-label {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .expert-bio {
+            font-size: 14px;
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .expert-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .skill-tag {
+            padding: 6px 12px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #4b5563;
+            font-weight: 500;
+        }
+
+        .expert-match {
+            padding: 12px 16px;
+            background: #f0fdf4;
+            border-radius: 10px;
+            border: 1px solid #bbf7d0;
+        }
+
+        .match-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #166534;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .match-reasons {
+            font-size: 13px;
+            color: #15803d;
+            line-height: 1.5;
+        }
+
+        .expert-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f5;
+        }
+
+        .expert-companies {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .expert-companies strong {
+            color: #374151;
+        }
+
+        .view-profile-btn {
+            padding: 10px 20px;
+            background: #f8f9fb;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #4f46e5;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .view-profile-btn:hover {
+            background: #4f46e5;
+            color: #ffffff;
+            border-color: #4f46e5;
+        }
+
+        /* Loading State */
+        .loading-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+        }
+
+        .loading-container.active {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #e5e7eb;
+            border-top-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .loading-subtext {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+
+        /* Error State */
+        .error-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            background: #fef2f2;
+            border-radius: 16px;
+            border: 1px solid #fecaca;
+            margin-bottom: 24px;
+        }
+
+        .error-container.active {
+            display: flex;
+        }
+
+        .error-icon {
+            width: 48px;
+            height: 48px;
+            background: #fee2e2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .error-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: #dc2626;
+        }
+
+        .error-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #dc2626;
+            margin-bottom: 4px;
+        }
+
+        .error-message {
+            font-size: 14px;
+            color: #7f1d1d;
+            text-align: center;
+        }
+
+        /* Query Analysis */
+        .query-analysis {
+            background: #f5f3ff;
+            border: 1px solid #ddd6fe;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+        }
+
+        .analysis-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6366f1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .analysis-text {
+            font-size: 14px;
+            color: #4c1d95;
+            line-height: 1.5;
+        }
+
+        .analysis-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .analysis-skill {
+            padding: 4px 10px;
+            background: #ede9fe;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #5b21b6;
+            font-weight: 500;
+        }
+
         /* Stats Section */
         .stats-section {
             display: flex;
@@ -678,7 +1015,7 @@
             </div>
         </div>
 
-        <div class="quick-tags">
+        <div class="quick-tags" id="quickTags">
             <button class="quick-tag">Deep Learning Specialists</button>
             <button class="quick-tag">NLP Researchers</button>
             <button class="quick-tag">Computer Vision Experts</button>
@@ -686,7 +1023,45 @@
             <button class="quick-tag">Data Scientists</button>
         </div>
 
-        <div class="stats-section">
+        <!-- Loading State -->
+        <div class="loading-container" id="loadingContainer">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Searching for experts...</div>
+            <div class="loading-subtext">AI is analyzing your query and finding the best matches</div>
+        </div>
+
+        <!-- Error State -->
+        <div class="error-container" id="errorContainer">
+            <div class="error-icon">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                    <line x1="12" y1="8" x2="12" y2="12" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="error-title">Search Failed</div>
+            <div class="error-message" id="errorMessage">Something went wrong. Please try again.</div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection">
+            <div class="query-analysis" id="queryAnalysis">
+                <div class="analysis-title">AI Understanding</div>
+                <div class="analysis-text" id="analysisText"></div>
+                <div class="analysis-skills" id="analysisSkills"></div>
+            </div>
+
+            <div class="results-header">
+                <h2 class="results-title">Expert Matches</h2>
+                <span class="results-count" id="resultsCount"></span>
+            </div>
+
+            <div class="results-grid" id="resultsGrid">
+                <!-- Expert cards will be inserted here -->
+            </div>
+        </div>
+
+        <div class="stats-section" id="statsSection">
             <div class="stat-item">
                 <div class="stat-number">500<span>+</span></div>
                 <div class="stat-label">AI/ML Experts</div>
@@ -717,6 +1092,7 @@
     </footer>
 
     <script>
+        // DOM Elements
         const searchInput = document.getElementById('searchInput');
         const searchBtn = document.getElementById('searchBtn');
         const fileInput = document.getElementById('fileInput');
@@ -724,6 +1100,17 @@
         const fileName = document.getElementById('fileName');
         const fileSize = document.getElementById('fileSize');
         const fileRemove = document.getElementById('fileRemove');
+        const loadingContainer = document.getElementById('loadingContainer');
+        const errorContainer = document.getElementById('errorContainer');
+        const errorMessage = document.getElementById('errorMessage');
+        const resultsSection = document.getElementById('resultsSection');
+        const resultsGrid = document.getElementById('resultsGrid');
+        const resultsCount = document.getElementById('resultsCount');
+        const queryAnalysis = document.getElementById('queryAnalysis');
+        const analysisText = document.getElementById('analysisText');
+        const analysisSkills = document.getElementById('analysisSkills');
+        const quickTags = document.getElementById('quickTags');
+        const statsSection = document.getElementById('statsSection');
 
         // Format file size
         function formatFileSize(bytes) {
@@ -732,6 +1119,198 @@
             const sizes = ['Bytes', 'KB', 'MB', 'GB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Get initials from name
+        function getInitials(name) {
+            if (!name) return '??';
+            const parts = name.trim().split(' ');
+            if (parts.length >= 2) {
+                return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+            }
+            return name.substring(0, 2).toUpperCase();
+        }
+
+        // Get score color based on value
+        function getScoreColor(score) {
+            if (score >= 80) return 'linear-gradient(135deg, #10b981, #059669)';
+            if (score >= 60) return 'linear-gradient(135deg, #3b82f6, #2563eb)';
+            if (score >= 40) return 'linear-gradient(135deg, #f59e0b, #d97706)';
+            return 'linear-gradient(135deg, #6b7280, #4b5563)';
+        }
+
+        // Parse skills string into array
+        function parseSkills(skillsStr) {
+            if (!skillsStr) return [];
+            return skillsStr.split(/[,;|]/)
+                .map(s => s.trim())
+                .filter(s => s.length > 0)
+                .slice(0, 6);
+        }
+
+        // Create expert card HTML
+        function createExpertCard(expert) {
+            const skills = parseSkills(expert.skills);
+            const matchReasons = expert.match_reasons || [];
+            const score = expert.scores?.final || expert.score || 0;
+
+            return `
+                <div class="expert-card">
+                    <div class="expert-header">
+                        <div class="expert-avatar">${getInitials(expert.name)}</div>
+                        <div class="expert-info">
+                            <div class="expert-name">${expert.name || 'Unknown'}</div>
+                            <div class="expert-title">${expert.title || 'Expert'}</div>
+                            <div class="expert-location">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke-width="2"/>
+                                    <circle cx="12" cy="10" r="3" stroke-width="2"/>
+                                </svg>
+                                ${expert.location || 'Location not specified'}
+                            </div>
+                        </div>
+                        <div class="expert-score">
+                            <div class="score-badge" style="background: ${getScoreColor(score)}">${Math.round(score)}%</div>
+                            <div class="score-label">Match Score</div>
+                        </div>
+                    </div>
+
+                    ${expert.biography ? `<div class="expert-bio">${expert.biography}</div>` : ''}
+
+                    ${skills.length > 0 ? `
+                        <div class="expert-skills">
+                            ${skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                        </div>
+                    ` : ''}
+
+                    ${matchReasons.length > 0 ? `
+                        <div class="expert-match">
+                            <div class="match-title">Why this match</div>
+                            <div class="match-reasons">${matchReasons.join(' • ')}</div>
+                        </div>
+                    ` : ''}
+
+                    <div class="expert-footer">
+                        <div class="expert-companies">
+                            ${expert.companies ? `<strong>Companies:</strong> ${expert.companies.substring(0, 50)}${expert.companies.length > 50 ? '...' : ''}` : ''}
+                        </div>
+                        ${expert.external_link ? `
+                            <a href="${expert.external_link}" target="_blank" class="view-profile-btn">View Profile</a>
+                        ` : `
+                            <button class="view-profile-btn" onclick="alert('Full profile coming soon!')">View Details</button>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Show loading state
+        function showLoading() {
+            loadingContainer.classList.add('active');
+            errorContainer.classList.remove('active');
+            resultsSection.classList.remove('active');
+            quickTags.style.display = 'none';
+            statsSection.style.display = 'none';
+        }
+
+        // Hide loading state
+        function hideLoading() {
+            loadingContainer.classList.remove('active');
+        }
+
+        // Show error
+        function showError(message) {
+            hideLoading();
+            errorContainer.classList.add('active');
+            errorMessage.textContent = message;
+            resultsSection.classList.remove('active');
+        }
+
+        // Show results
+        function showResults(data) {
+            hideLoading();
+            errorContainer.classList.remove('active');
+
+            // Show query analysis if available
+            if (data.query_analysis) {
+                const analysis = data.query_analysis;
+                analysisText.textContent = analysis.interpreted_need || 'Understanding your search...';
+
+                // Show required skills
+                const skills = analysis.required_skills || [];
+                analysisSkills.innerHTML = skills.map(skill =>
+                    `<span class="analysis-skill">${skill}</span>`
+                ).join('');
+
+                queryAnalysis.style.display = 'block';
+            } else {
+                queryAnalysis.style.display = 'none';
+            }
+
+            // Update results count
+            resultsCount.textContent = `${data.total_results} expert${data.total_results !== 1 ? 's' : ''} found`;
+
+            // Render expert cards
+            if (data.results && data.results.length > 0) {
+                resultsGrid.innerHTML = data.results.map(expert => createExpertCard(expert)).join('');
+                resultsSection.classList.add('active');
+            } else {
+                resultsGrid.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #64748b;">
+                        <p>No experts found matching your criteria.</p>
+                        <p style="font-size: 13px; margin-top: 8px;">Try adjusting your search terms.</p>
+                    </div>
+                `;
+                resultsSection.classList.add('active');
+            }
+        }
+
+        // Reset to initial state
+        function resetState() {
+            hideLoading();
+            errorContainer.classList.remove('active');
+            resultsSection.classList.remove('active');
+            quickTags.style.display = 'flex';
+            statsSection.style.display = 'flex';
+        }
+
+        // Perform search
+        async function performSearch(query) {
+            if (!query || !query.trim()) {
+                resetState();
+                return;
+            }
+
+            showLoading();
+
+            try {
+                const response = await fetch('/api/search/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: query.trim(),
+                        top_k: 20
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Search failed');
+                }
+
+                if (data.success) {
+                    showResults(data);
+                } else {
+                    showError(data.error || 'Search failed. Please try again.');
+                }
+
+            } catch (error) {
+                console.error('Search error:', error);
+                showError(error.message || 'Failed to connect to search service. Please try again.');
+            }
         }
 
         // File upload handling
@@ -752,33 +1331,38 @@
             fileSize.textContent = '';
         });
 
-        // Search functionality
+        // Search button click
         searchBtn.addEventListener('click', () => {
             const query = searchInput.value.trim();
-            const file = fileInput.files[0];
-
-            if (query || file) {
-                console.log('Searching for:', query);
-                if (file) {
-                    console.log('With file:', file.name);
-                }
-                // Handle search request - will integrate with backend
+            if (query) {
+                performSearch(query);
             }
         });
 
         // Enter key to search
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                searchBtn.click();
+                const query = searchInput.value.trim();
+                if (query) {
+                    performSearch(query);
+                }
             }
         });
 
-        // Quick tag buttons
+        // Quick tag buttons - click to search immediately
         document.querySelectorAll('.quick-tag').forEach(btn => {
             btn.addEventListener('click', () => {
-                searchInput.value = btn.textContent;
-                searchInput.focus();
+                const query = btn.textContent;
+                searchInput.value = query;
+                performSearch(query);
             });
+        });
+
+        // Clear results when search input is cleared
+        searchInput.addEventListener('input', (e) => {
+            if (!e.target.value.trim()) {
+                resetState();
+            }
         });
     </script>
 </body>
