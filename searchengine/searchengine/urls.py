@@ -22,4 +22,9 @@ from . import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.home, name="home"),
+
+    # Search API endpoints
+    path("api/search/", views.search_api, name="search_api"),
+    path("api/search/fast/", views.search_fast_api, name="search_fast_api"),
+    path("api/search/health/", views.search_health, name="search_health"),
 ]
