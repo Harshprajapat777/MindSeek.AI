@@ -684,200 +684,42 @@
             border-color: #4f46e5;
         }
 
-        /* Loading State - Progress Card */
+        /* Loading State */
         .loading-container {
             display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 40px 20px;
-            width: 100%;
-            max-width: 500px;
+            padding: 60px 20px;
         }
 
         .loading-container.active {
             display: flex;
         }
 
-        .progress-card {
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 32px;
-            box-shadow: 0 8px 32px rgba(79, 70, 229, 0.12);
-            border: 1px solid rgba(99, 102, 241, 0.15);
-            width: 100%;
-        }
-
-        .progress-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .progress-icon {
+        .loading-spinner {
             width: 48px;
             height: 48px;
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: pulse-icon 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse-icon {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .progress-icon svg {
-            width: 24px;
-            height: 24px;
-            stroke: #ffffff;
-        }
-
-        .progress-title {
-            flex: 1;
-        }
-
-        .progress-title h3 {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1a1a2e;
-            margin-bottom: 2px;
-        }
-
-        .progress-title p {
-            font-size: 13px;
-            color: #64748b;
-        }
-
-        .progress-percentage {
-            font-size: 24px;
-            font-weight: 700;
-            color: #4f46e5;
-        }
-
-        .progress-bar-container {
-            height: 8px;
-            background: #e5e7eb;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 24px;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #4f46e5, #7c3aed);
-            border-radius: 4px;
-            transition: width 0.5s ease;
-            width: 0%;
-        }
-
-        .progress-steps {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .progress-step {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 12px 16px;
-            background: #f8f9fb;
-            border-radius: 12px;
-            border: 1px solid #e5e7eb;
-            transition: all 0.3s ease;
-        }
-
-        .progress-step.active {
-            background: #f5f3ff;
-            border-color: #c4b5fd;
-        }
-
-        .progress-step.completed {
-            background: #f0fdf4;
-            border-color: #bbf7d0;
-        }
-
-        .step-indicator {
-            width: 32px;
-            height: 32px;
+            border: 4px solid #e5e7eb;
+            border-top-color: #6366f1;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: 600;
-            background: #e5e7eb;
-            color: #64748b;
-            flex-shrink: 0;
-            transition: all 0.3s ease;
-        }
-
-        .progress-step.active .step-indicator {
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            color: #ffffff;
-            animation: pulse-step 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulse-step {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
-            50% { box-shadow: 0 0 0 8px rgba(99, 102, 241, 0); }
-        }
-
-        .progress-step.completed .step-indicator {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: #ffffff;
-        }
-
-        .step-content {
-            flex: 1;
-        }
-
-        .step-title {
-            font-size: 14px;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 2px;
-        }
-
-        .step-description {
-            font-size: 12px;
-            color: #9ca3af;
-        }
-
-        .progress-step.active .step-title {
-            color: #4f46e5;
-        }
-
-        .progress-step.completed .step-title {
-            color: #059669;
-        }
-
-        .step-status {
-            font-size: 11px;
-            font-weight: 500;
-            padding: 4px 10px;
-            border-radius: 12px;
-            background: #e5e7eb;
-            color: #64748b;
-        }
-
-        .progress-step.active .step-status {
-            background: #ede9fe;
-            color: #7c3aed;
-        }
-
-        .progress-step.completed .step-status {
-            background: #dcfce7;
-            color: #16a34a;
+            animation: spin 1s linear infinite;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .loading-subtext {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 4px;
         }
 
         /* Error State */
@@ -1181,56 +1023,11 @@
             <button class="quick-tag">Data Scientists</button>
         </div>
 
-        <!-- Loading State - Progress Card -->
+        <!-- Loading State -->
         <div class="loading-container" id="loadingContainer">
-            <div class="progress-card">
-                <div class="progress-header">
-                    <div class="progress-icon">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="11" cy="11" r="8" stroke-width="2"/>
-                            <path d="M21 21l-4.35-4.35" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                    </div>
-                    <div class="progress-title">
-                        <h3>Finding Experts</h3>
-                        <p>AI is processing your request</p>
-                    </div>
-                    <div class="progress-percentage" id="progressPercent">0%</div>
-                </div>
-
-                <div class="progress-bar-container">
-                    <div class="progress-bar" id="progressBar"></div>
-                </div>
-
-                <div class="progress-steps">
-                    <div class="progress-step" id="step1">
-                        <div class="step-indicator">1</div>
-                        <div class="step-content">
-                            <div class="step-title">Understanding Query</div>
-                            <div class="step-description">LLM analyzing your search intent</div>
-                        </div>
-                        <div class="step-status">Pending</div>
-                    </div>
-
-                    <div class="progress-step" id="step2">
-                        <div class="step-indicator">2</div>
-                        <div class="step-content">
-                            <div class="step-title">Searching Embeddings</div>
-                            <div class="step-description">FAISS scanning all expert profiles</div>
-                        </div>
-                        <div class="step-status">Pending</div>
-                    </div>
-
-                    <div class="progress-step" id="step3">
-                        <div class="step-indicator">3</div>
-                        <div class="step-content">
-                            <div class="step-title">Cross-Encoder Reranking</div>
-                            <div class="step-description">Finding top 5 best matches</div>
-                        </div>
-                        <div class="step-status">Pending</div>
-                    </div>
-                </div>
-            </div>
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Searching for experts...</div>
+            <div class="loading-subtext">AI is analyzing your query and finding the best matches</div>
         </div>
 
         <!-- Error State -->
@@ -1315,15 +1112,6 @@
         const quickTags = document.getElementById('quickTags');
         const statsSection = document.getElementById('statsSection');
 
-        // Progress elements
-        const progressBar = document.getElementById('progressBar');
-        const progressPercent = document.getElementById('progressPercent');
-        const step1 = document.getElementById('step1');
-        const step2 = document.getElementById('step2');
-        const step3 = document.getElementById('step3');
-
-        let progressInterval = null;
-
         // Format file size
         function formatFileSize(bytes) {
             if (bytes === 0) return '0 Bytes';
@@ -1364,16 +1152,7 @@
         function createExpertCard(expert) {
             const skills = parseSkills(expert.skills);
             const matchReasons = expert.match_reasons || [];
-            // Use cross_encoder score, convert to percentage (score is typically -10 to 10)
-            let score = 0;
-            if (expert.scores?.cross_encoder !== undefined) {
-                // Cross-encoder scores are typically between -10 and 10, normalize to 0-100
-                score = Math.min(100, Math.max(0, (expert.scores.cross_encoder + 5) * 10));
-            } else if (expert.scores?.final) {
-                score = expert.scores.final;
-            } else if (expert.score) {
-                score = expert.score;
-            }
+            const score = expert.scores?.final || expert.score || 0;
 
             return `
                 <div class="expert-card">
@@ -1425,101 +1204,6 @@
             `;
         }
 
-        // Reset progress state
-        function resetProgress() {
-            // Reset progress bar
-            progressBar.style.width = '0%';
-            progressPercent.textContent = '0%';
-
-            // Reset all steps
-            [step1, step2, step3].forEach((step, index) => {
-                step.classList.remove('active', 'completed');
-                step.querySelector('.step-status').textContent = 'Pending';
-                step.querySelector('.step-indicator').innerHTML = (index + 1).toString();
-            });
-
-            // Clear any running interval
-            if (progressInterval) {
-                clearInterval(progressInterval);
-                progressInterval = null;
-            }
-        }
-
-        // Update step status
-        function updateStep(step, status) {
-            step.classList.remove('active', 'completed');
-
-            if (status === 'active') {
-                step.classList.add('active');
-                step.querySelector('.step-status').textContent = 'Processing...';
-            } else if (status === 'completed') {
-                step.classList.add('completed');
-                step.querySelector('.step-status').textContent = 'Done';
-                step.querySelector('.step-indicator').innerHTML = '&#10003;';
-            }
-        }
-
-        // Update progress bar
-        function updateProgress(percent) {
-            progressBar.style.width = percent + '%';
-            progressPercent.textContent = Math.round(percent) + '%';
-        }
-
-        // Animate progress through steps
-        function startProgressAnimation() {
-            resetProgress();
-            let progress = 0;
-
-            // Start step 1 immediately
-            updateStep(step1, 'active');
-
-            progressInterval = setInterval(() => {
-                progress += 2;
-
-                if (progress <= 30) {
-                    // Step 1: Understanding query (0-30%)
-                    updateProgress(progress);
-                    if (progress === 30) {
-                        updateStep(step1, 'completed');
-                        updateStep(step2, 'active');
-                    }
-                } else if (progress <= 70) {
-                    // Step 2: Searching embeddings (30-70%)
-                    updateProgress(progress);
-                    if (progress === 70) {
-                        updateStep(step2, 'completed');
-                        updateStep(step3, 'active');
-                    }
-                } else if (progress <= 90) {
-                    // Step 3: Cross-encoder reranking (70-90%)
-                    updateProgress(progress);
-                } else {
-                    // Hold at 90% until results come back
-                    updateProgress(90);
-                }
-
-                // Stop at 90%, will complete to 100% when results arrive
-                if (progress >= 90) {
-                    clearInterval(progressInterval);
-                    progressInterval = null;
-                }
-            }, 100);
-        }
-
-        // Complete progress animation
-        function completeProgress() {
-            if (progressInterval) {
-                clearInterval(progressInterval);
-                progressInterval = null;
-            }
-
-            // Complete all steps
-            updateStep(step1, 'completed');
-            updateStep(step2, 'completed');
-            updateStep(step3, 'completed');
-            updateProgress(100);
-        }
-
         // Show loading state
         function showLoading() {
             loadingContainer.classList.add('active');
@@ -1527,21 +1211,11 @@
             resultsSection.classList.remove('active');
             quickTags.style.display = 'none';
             statsSection.style.display = 'none';
-
-            // Start progress animation
-            startProgressAnimation();
         }
 
         // Hide loading state
         function hideLoading() {
-            // Complete progress first
-            completeProgress();
-
-            // Small delay to show 100% before hiding
-            setTimeout(() => {
-                loadingContainer.classList.remove('active');
-                resetProgress();
-            }, 500);
+            loadingContainer.classList.remove('active');
         }
 
         // Show error
