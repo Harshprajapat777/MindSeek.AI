@@ -20,14 +20,20 @@ def home(request):
 @require_http_methods(["POST", "GET"])
 def search_api(request):
     """
-    LLM-Powered Expert Search API.
+    Expert Search API with Cross-Encoder Reranking.
+
+    Pipeline:
+    1. LLM understands query
+    2. FAISS searches ALL embeddings
+    3. Cross-encoder reranks top candidates
+    4. Returns top 5 best matches
 
     GET: /api/search?q=<query>&top_k=<number>
-    POST: /api/search with JSON body {"query": "...", "top_k": 20}
+    POST: /api/search with JSON body {"query": "...", "top_k": 5}
 
     Returns JSON with:
     - query_analysis: LLM's understanding of the query
-    - results: Ranked experts with match reasons
+    - results: Top 5 experts ranked by cross-encoder
     """
     try:
         # Parse request
@@ -37,10 +43,10 @@ def search_api(request):
             except json.JSONDecodeError:
                 data = {}
             query = data.get('query', '')
-            top_k = data.get('top_k', 20)
+            top_k = data.get('top_k', 5)  # Default to 5 after cross-encoder reranking
         else:
             query = request.GET.get('q', '') or request.GET.get('query', '')
-            top_k = int(request.GET.get('top_k', 20))
+            top_k = int(request.GET.get('top_k', 5))  # Default to 5
 
         # Validate
         if not query or not query.strip():
