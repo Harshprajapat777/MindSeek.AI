@@ -31,7 +31,7 @@ load_dotenv(BASE_DIR / 'searchengine' / '.env')
 load_dotenv(BASE_DIR / '.env')
 
 import faiss
-from sentence_transformers import SentenceTransformer, CrossEncoder
+from sentence_transformers import SentenceTransformer
 from openai import OpenAI
 
 
@@ -44,15 +44,9 @@ class SearchConfig:
     """Search configuration."""
     data_dir: Path = BASE_DIR / 'searchengine' / 'data'
     embedding_model: str = 'all-MiniLM-L6-v2'
-    cross_encoder_model: str = 'cross-encoder/ms-marco-MiniLM-L-6-v2'
     openai_model: str = os.getenv('OPENAI_MODEL', 'gpt-4o-mini')
-    # Search ALL embeddings - set to -1 to search entire index
-    faiss_candidates: int = int(os.getenv('FAISS_CANDIDATES', -1))
-    # Number of candidates for cross-encoder reranking (after FAISS retrieval)
-    # Higher value = better accuracy but slower (100-200 is good balance)
-    rerank_candidates: int = int(os.getenv('RERANK_CANDIDATES', 100))
-    # Final top results to return after reranking
-    top_k: int = int(os.getenv('SEARCH_TOP_K', 5))
+    faiss_candidates: int = int(os.getenv('FAISS_CANDIDATES', 100))
+    top_k: int = int(os.getenv('SEARCH_TOP_K', 20))
 
     def __post_init__(self):
         self.embeddings_file = self.data_dir / 'expert_embeddings.pkl'
@@ -72,7 +66,6 @@ class ModelLoader:
 
     _instance = None
     _embedding_model = None
-    _cross_encoder = None
     _faiss_index = None
     _metadata = None
     _openai_client = None
@@ -87,12 +80,6 @@ class ModelLoader:
             print(f"Loading embedding model: {CONFIG.embedding_model}")
             self._embedding_model = SentenceTransformer(CONFIG.embedding_model)
         return self._embedding_model
-
-    def get_cross_encoder(self) -> CrossEncoder:
-        if self._cross_encoder is None:
-            print(f"Loading cross-encoder model: {CONFIG.cross_encoder_model}")
-            self._cross_encoder = CrossEncoder(CONFIG.cross_encoder_model)
-        return self._cross_encoder
 
     def get_faiss_index(self) -> faiss.Index:
         if self._faiss_index is None:
@@ -201,7 +188,6 @@ class ExpertSearchService:
         """Lazy load all models."""
         if not self._initialized:
             MODELS.get_embedding_model()
-            MODELS.get_cross_encoder()
             MODELS.get_faiss_index()
             MODELS.get_metadata()
             MODELS.get_openai_client()
@@ -245,14 +231,8 @@ class ExpertSearchService:
                 "search_query": query
             }
 
-    def _faiss_search(self, query: str, k: int = -1) -> List[Dict[str, Any]]:
-        """
-        Retrieve candidates using FAISS.
-
-        Args:
-            query: Search query text
-            k: Number of candidates to retrieve. -1 means search ALL embeddings.
-        """
+    def _faiss_search(self, query: str, k: int) -> List[Dict[str, Any]]:
+        """Retrieve candidates using FAISS."""
         model = MODELS.get_embedding_model()
         index = MODELS.get_faiss_index()
         metadata = MODELS.get_metadata()
@@ -264,14 +244,9 @@ class ExpertSearchService:
             normalize_embeddings=True
         ).astype(np.float32).reshape(1, -1)
 
-        # Search ALL embeddings if k is -1, otherwise use specified k
-        if k == -1:
-            search_k = index.ntotal
-        else:
-            search_k = min(k, index.ntotal)
-
-        print(f"Searching through {search_k} embeddings (total: {index.ntotal})")
-        scores, indices = index.search(query_embedding, search_k)
+        # Search
+        k = min(k, index.ntotal)
+        scores, indices = index.search(query_embedding, k)
 
         # Get candidates
         candidates = []
@@ -296,91 +271,6 @@ Sector: {expert.get('sector', 'N/A')}
 Location: {expert.get('city', '')}, {expert.get('country', '')}
 Bio: {expert.get('biography', 'N/A')[:300]}...
 """
-
-    def _format_expert_for_crossencoder(self, expert: Dict[str, Any]) -> str:
-        """Format expert data for cross-encoder scoring."""
-        parts = []
-
-        # Name for context
-        name = f"{expert.get('first_name', '')} {expert.get('surname', '')}".strip()
-        if name:
-            parts.append(name)
-
-        # Title is most important for matching
-        if expert.get('title'):
-            parts.append(f"Title: {expert['title']}")
-
-        # Position/role
-        if expert.get('position'):
-            parts.append(f"Position: {expert['position']}")
-
-        # Skills are critical for expert matching
-        if expert.get('skills'):
-            parts.append(f"Skills: {expert['skills']}")
-
-        # Companies for context
-        if expert.get('companies'):
-            parts.append(f"Companies: {expert['companies'][:200]}")
-
-        # Sector
-        if expert.get('sector'):
-            parts.append(f"Sector: {expert['sector']}")
-
-        # Biography for additional context
-        if expert.get('biography'):
-            parts.append(expert['biography'][:400])
-
-        return " | ".join(parts) if parts else "No information available"
-
-    def _rerank_with_crossencoder(
-        self,
-        query: str,
-        candidates: List[Dict[str, Any]],
-        top_k: int = None
-    ) -> List[Dict[str, Any]]:
-        """
-        Rerank candidates using cross-encoder model.
-
-        Cross-encoder provides more accurate relevance scores by
-        jointly encoding query and document pairs.
-
-        Args:
-            query: Original search query
-            candidates: List of candidate experts from FAISS
-            top_k: Number of top results to return after reranking
-
-        Returns:
-            Reranked list of candidates with cross-encoder scores
-        """
-        if not candidates:
-            return candidates
-
-        top_k = top_k or self.config.top_k
-
-        cross_encoder = MODELS.get_cross_encoder()
-
-        # Create query-document pairs for cross-encoder
-        pairs = []
-        for expert in candidates:
-            doc_text = self._format_expert_for_crossencoder(expert)
-            pairs.append([query, doc_text])
-
-        print(f"Cross-encoder reranking {len(pairs)} candidates...")
-
-        # Get cross-encoder scores
-        scores = cross_encoder.predict(pairs, show_progress_bar=False)
-
-        # Attach scores to candidates
-        for i, expert in enumerate(candidates):
-            expert['cross_encoder_score'] = float(scores[i])
-
-        # Sort by cross-encoder score (descending)
-        candidates.sort(key=lambda x: x['cross_encoder_score'], reverse=True)
-
-        print(f"Top cross-encoder scores: {[round(c['cross_encoder_score'], 3) for c in candidates[:5]]}")
-
-        # Return top_k candidates
-        return candidates[:top_k]
 
     def _rank_with_llm(
         self,
@@ -452,21 +342,15 @@ Bio: {expert.get('biography', 'N/A')[:300]}...
         include_analysis: bool = True
     ) -> Dict[str, Any]:
         """
-        Perform intelligent expert search with cross-encoder reranking.
-
-        Pipeline:
-        1. LLM understands query and extracts optimized search terms
-        2. FAISS searches ALL embeddings for semantic matches
-        3. Cross-encoder reranks top candidates for precision
-        4. Returns top 5 (or specified top_k) best matches
+        Perform intelligent expert search.
 
         Args:
             query: Natural language search query
-            top_k: Number of results to return (default: 5)
+            top_k: Number of results to return
             include_analysis: Include LLM analysis in response
 
         Returns:
-            Dict with query_analysis, results, and scores
+            Dict with query_analysis, results, and summary
         """
         self._ensure_initialized()
 
@@ -477,16 +361,16 @@ Bio: {expert.get('biography', 'N/A')[:300]}...
                 'results': []
             }
 
-        top_k = top_k or self.config.top_k  # Default is 5
+        top_k = top_k or self.config.top_k
 
-        # Step 1: Understand the query with LLM (for display only)
-        print(f"Step 1: Understanding query: {query}")
+        # Step 1: Understand the query
+        print(f"Understanding query: {query}")
         query_analysis = self._understand_query(query)
 
-        # Step 2: FAISS searches ALL embeddings using ORIGINAL query
-        # Don't use LLM-modified query - it can cause wrong results
-        print(f"Step 2: FAISS searching ALL embeddings with original query: {query}")
-        candidates = self._faiss_search(query, self.config.faiss_candidates)  # -1 = ALL
+        # Step 2: Get FAISS candidates using optimized search query
+        search_query = query_analysis.get('search_query', query)
+        print(f"Searching with: {search_query}")
+        candidates = self._faiss_search(search_query, self.config.faiss_candidates)
 
         if not candidates:
             return {
@@ -498,34 +382,13 @@ Bio: {expert.get('biography', 'N/A')[:300]}...
                 'summary': 'No matching experts found.'
             }
 
-        print(f"FAISS found {len(candidates)} candidates from all embeddings")
+        # Step 3: Rank with LLM
+        print(f"Ranking {len(candidates)} candidates with LLM...")
+        ranked_results = self._rank_with_llm(query_analysis, candidates)
 
-        # Debug: Show top 5 FAISS results
-        print("Top 5 FAISS results (before reranking):")
-        for i, c in enumerate(candidates[:5]):
-            print(f"  {i+1}. {c.get('title', 'N/A')} | Score: {c.get('faiss_score', 0):.4f}")
-
-        # Step 3: Cross-encoder reranking on top candidates
-        # First, take top N from FAISS for cross-encoder (for efficiency)
-        rerank_count = min(self.config.rerank_candidates, len(candidates))
-        candidates_for_rerank = candidates[:rerank_count]
-
-        print(f"Step 3: Cross-encoder reranking top {rerank_count} candidates...")
-        reranked_results = self._rerank_with_crossencoder(
-            query,
-            candidates_for_rerank,
-            top_k=top_k
-        )
-
-        # Step 4: Format final results (top 5)
-        print(f"Step 4: Returning top {top_k} results after cross-encoder reranking")
-
-        # Debug: Show final results
-        print("Final results after cross-encoder reranking:")
-        for i, c in enumerate(reranked_results):
-            print(f"  {i+1}. {c.get('title', 'N/A')} | CE Score: {c.get('cross_encoder_score', 0):.4f}")
+        # Step 4: Format final results
         final_results = []
-        for i, expert in enumerate(reranked_results):
+        for i, expert in enumerate(ranked_results[:top_k]):
             final_results.append({
                 'rank': i + 1,
                 'uid': expert.get('uid', ''),
@@ -539,18 +402,18 @@ Bio: {expert.get('biography', 'N/A')[:300]}...
                 'sector': expert.get('sector', ''),
                 'external_link': expert.get('external_link', ''),
                 'scores': {
-                    'cross_encoder': round(expert.get('cross_encoder_score', 0), 4),
+                    'final': round(expert.get('final_score', 0), 2),
+                    'llm': expert.get('llm_score', 0),
                     'semantic': round(expert.get('faiss_score', 0) * 100, 2)
                 },
-                'match_reasons': []
+                'match_reasons': expert.get('match_reasons', []),
+                'gaps': expert.get('gaps', [])
             })
 
         return {
             'success': True,
             'query': query,
             'query_analysis': query_analysis if include_analysis else None,
-            'total_candidates': len(candidates),
-            'reranked_candidates': rerank_count,
             'total_results': len(final_results),
             'results': final_results
         }
@@ -601,8 +464,8 @@ def get_search_service() -> ExpertSearchService:
     return _search_service
 
 
-def search_experts(query: str, top_k: int = 5) -> Dict[str, Any]:
-    """Search experts with cross-encoder reranking."""
+def search_experts(query: str, top_k: int = 20) -> Dict[str, Any]:
+    """Search experts with LLM-powered ranking."""
     return get_search_service().search(query, top_k=top_k)
 
 
@@ -618,7 +481,7 @@ def search_experts_fast(query: str, top_k: int = 20) -> Dict[str, Any]:
 def main():
     """Test the search service."""
     print("=" * 60)
-    print("Expert Search Service - Cross-Encoder Reranking")
+    print("Expert Search Service - LLM Powered")
     print("=" * 60)
 
     service = ExpertSearchService()
@@ -631,15 +494,13 @@ def main():
 
     if results['success']:
         print(f"Query Analysis: {json.dumps(results.get('query_analysis', {}), indent=2)}\n")
-        print(f"Total candidates searched: {results.get('total_candidates', 'N/A')}")
-        print(f"Candidates reranked: {results.get('reranked_candidates', 'N/A')}")
-        print(f"Final results: {results['total_results']}\n")
+        print(f"Found {results['total_results']} results:\n")
 
         for r in results['results']:
             print(f"#{r['rank']} - {r['name']}")
             print(f"   Title: {r['title']}")
-            print(f"   Cross-Encoder Score: {r['scores']['cross_encoder']}")
-            print(f"   FAISS Semantic Score: {r['scores']['semantic']}")
+            print(f"   Score: {r['scores']['final']} (LLM: {r['scores']['llm']}, Semantic: {r['scores']['semantic']})")
+            print(f"   Match: {', '.join(r['match_reasons'][:2])}")
             print()
     else:
         print(f"Error: {results.get('error')}")
